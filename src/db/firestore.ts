@@ -73,7 +73,6 @@ export const addRoom = async (room: RoomType, roomId?: string): Promise<void> =>
 		id = roomId;
 	}
 	let savedCities = await getSavedCities() || [];
-	console.log(savedCities);
 	savedCities = [...savedCities, room.city];
 	const citiesSet = new Set(savedCities);
 	savedCities = [...citiesSet];
@@ -176,13 +175,14 @@ export const getRoomChats = async (city: string, id: string): Promise<UserData[]
 	return roomChats;
 };
 
-export const writeMessage = async (city: string, id: string, text: string): Promise<void> => {
+export const writeMessage = async (city: string, id: string, text: string, userId?: string): Promise<void> => {
 	const user = getCurrentUser();
 	if (user === null) return;
-	const currentMessageDoc = await getDoc(doc(db, 'chats', city, id, user.uid));
+	const newUserId: string = userId ? userId : user.uid;
+	const currentMessageDoc = await getDoc(doc(db, 'chats', city, id, newUserId));
 	if (currentMessageDoc.exists()) {
 		const data = currentMessageDoc.data();
 		const messages = [...data.messages, text];
-		await updateDoc(doc(db, 'chats', city, id, user.uid), { messages });
+		await updateDoc(doc(db, 'chats', city, id, newUserId), { messages });
 	}
 };

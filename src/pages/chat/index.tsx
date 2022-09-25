@@ -94,6 +94,7 @@ const Chat = () => {
 	useEffect(() => {
 		if (user !== null && city !== '' && id !== '') {
 			let userId = uid === '' ? user.uid : uid;
+			setUid(userId);
 			onSnapshot(doc(db, 'chats', city, id, userId), (doc) => {
 				const data = doc.data();
 				if (data && data.messages) {
@@ -107,7 +108,7 @@ const Chat = () => {
 	const handleSubmit = (e: any): void => {
 		e.preventDefault();
 		if (text !== '') {
-			writeMessage(city, id, text);
+			writeMessage(city, id, text, uid);
 			setText('');
 		}
 	};
