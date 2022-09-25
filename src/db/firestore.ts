@@ -72,7 +72,8 @@ export const addRoom = async (room: RoomType, roomId?: string): Promise<void> =>
 	} else {
 		id = roomId;
 	}
-	let savedCities = await getSavedCities();
+	let savedCities = await getSavedCities() || [];
+	console.log(savedCities);
 	savedCities = [...savedCities, room.city];
 	const citiesSet = new Set(savedCities);
 	savedCities = [...citiesSet];
