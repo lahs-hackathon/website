@@ -8,11 +8,18 @@ export interface RoomType {
 	name: string;
 	rentPrice: number;
 	age: number;
-	uid: string;
 	isStudent: boolean;
-	employed: EmploymentStatus;
-	social: SocialType;
-	gender: GenderType;
-	schedule: ScheduleType;
+	employed: EmploymentStatus | '';
+	social: SocialType | '';
+	gender: GenderType | '';
+	schedule: ScheduleType | '';
 	sqft: number;
+	uid: string;
+	address: string;
+	id?: string;
+}
+
+export interface RoomIdType {
+	id: string;
+	city: string;
 }

@@ -29,13 +29,14 @@ import {
 } from '@mui/material';
 import Card from 'components/card';
 import { useNavigate } from 'react-router-dom';
+import Header from 'components/header';
 
 const PageWrapper = styled('div')({
 	height: '100%',
 	width: '100%',
 	padding: '30px',
 	display: 'flex',
-	justifyContent: 'center'
+	justifyContent: 'center',
 });
 
 const ContentWrapper = styled('div')(({ theme }) => ({
@@ -60,7 +61,17 @@ const DisclaimerWrapper = styled('div')({
 	}
 });
 
-const Login = () => {
+interface LoginProps {
+	force: boolean;
+}
+
+const defaultProps = {
+	force: false
+};
+
+type LoginPropsType = LoginProps & typeof defaultProps;
+
+const Login = ({ force }: LoginPropsType) => {
 	const theme = useTheme();
 	const navigate = useNavigate();
 	const [userResponse, setUserResponse] = useState<boolean>(false);
@@ -80,23 +91,86 @@ const Login = () => {
 	const [showingErrors, setShowingErrors] = useState<boolean>(false);
 	const [currentStep, setCurrentStep] = useState<number>(0);
 
-	const [preferedSocial, setPreferedSocial] = useState<SocialType | ''>('');
-	const [preferedScheduleType, setPreferedScheduleType] = useState<ScheduleType | ''>('');
-	const [preferedEmploymentStatus, setPreferedEmploymentStatus] = useState<EmploymentStatus | ''>('');
-	const [preferedIsStudent, setPreferedIsStudent] = useState<boolean | null>(null);
+	const [preferredSocial, setPreferredSocial] = useState<SocialType | ''>('');
+	const [preferredScheduleType, setPreferredScheduleType] = useState<ScheduleType | ''>('');
+	const [preferredEmploymentStatus, setPreferredEmploymentStatus] = useState<EmploymentStatus | ''>('');
+	const [preferredIsStudent, setPreferredIsStudent] = useState<boolean | null>(null);
 
 	const [excludeSocial, setExcludeSocial] = useState<SocialType | ''>('');
 	const [excludeScheduleType, setExcludeScheduleType] = useState<ScheduleType | ''>('');
 	const [excludeEmploymentStatus, setExcludeEmploymentStatus] = useState<EmploymentStatus | ''>('');
 	const [excludeIsStudent, setExcludeIsStudent] = useState<boolean>(false);
+
 	const minDistance = 4;
 
 	useEffect(() => {
+		function check(arr: any[], vals: any[]) {
+			for (let i = 0; i < vals.length; i++) {
+				if (arr.includes(vals[i])) return vals[i];
+			}
+			return false;
+		}
+
 		(async (): Promise<void> => {
 			if (!loading) {
 				const tempUserInfo = await getUserInfo();
-				console.log(tempUserInfo);
 				setUserInfo(tempUserInfo);
+				if (tempUserInfo !== null) {
+					console.log(tempUserInfo);
+					setName(tempUserInfo.name);
+					setAge(tempUserInfo.age);
+					setGender(tempUserInfo.gender);
+					setAgePreference([tempUserInfo.agePreference.min, tempUserInfo.agePreference.max]);
+					setMaxRent(tempUserInfo.maxRent);
+					const socialTag = check(tempUserInfo.tags, ['extroverted', 'introverted']);
+					if (socialTag) {
+						setSocial(socialTag);
+					}
+					const scheduleTag = check(tempUserInfo.tags, ['morning', 'evening']);
+					if (scheduleTag) {
+						setScheduleType(scheduleTag);
+					}
+					const employmentTag = check(tempUserInfo.tags, ['employed', 'unemployed', 'unknown']);
+					if (employmentTag) {
+						setEmploymentStatus(employmentTag);
+					}
+					const studentTag = check(tempUserInfo.tags, ['student']);
+					if (studentTag) {
+						setIsStudent(true);
+					}
+					const preferredSocialTag = check(tempUserInfo.preferences, ['extroverted', 'introverted']);
+					if (preferredSocialTag) {
+						setPreferredSocial(preferredSocialTag);
+					}
+					const preferredScheduleTag = check(tempUserInfo.preferences, ['morning', 'evening']);
+					if (preferredScheduleTag) {
+						setPreferredScheduleType(preferredScheduleTag);
+					}
+					const preferredEmploymentTag = check(tempUserInfo.preferences, ['employed', 'unemployed', 'unknown']);
+					if (preferredEmploymentTag) {
+						setPreferredEmploymentStatus(preferredEmploymentTag);
+					}
+					const preferredStudentTag = check(tempUserInfo.preferences, ['student']);
+					if (preferredStudentTag) {
+						setPreferredIsStudent(true);
+					}
+					const excludeSocialTag = check(tempUserInfo.excludes, ['extroverted', 'introverted']);
+					if (excludeSocialTag) {
+						setExcludeSocial(excludeSocialTag);
+					}
+					const excludeScheduleTag = check(tempUserInfo.excludes, ['morning', 'evening']);
+					if (excludeScheduleTag) {
+						setExcludeScheduleType(excludeScheduleTag)
+					}
+					const excludeEmploymentTag = check(tempUserInfo.excludes, ['employed', 'unemployed', 'unkown']);
+					if (excludeEmploymentTag) {
+						setExcludeEmploymentStatus(excludeEmploymentTag);
+					}
+					const excludeStudentTag = check(tempUserInfo.excludes, ['student']);
+					if (excludeStudentTag) {
+						setExcludeIsStudent(true);
+					}
+				}
 				setUserResponse(true);
 			}
 		})();
@@ -143,9 +217,9 @@ const Login = () => {
 					employmentStatus
 				],
 				preferences: [
-					preferedSocial,
-					preferedScheduleType,
-					preferedEmploymentStatus
+					preferredSocial,
+					preferredScheduleType,
+					preferredEmploymentStatus
 				],
 				excludes: [
 					excludeSocial,
@@ -156,7 +230,7 @@ const Login = () => {
 			if (isStudent) {
 				person.tags.push('student');
 			}
-			if (preferedIsStudent) {
+			if (preferredIsStudent) {
 				person.preferences.push('student');
 			}
 			if (excludeIsStudent) {
@@ -166,9 +240,17 @@ const Login = () => {
 			person.preferences = person.preferences.filter(item => item !== '');
 			person.excludes = person.excludes.filter(item => item !== '');
 			await setUserData(person);
-			navigate('/');
+			if (!force) {
+				navigate('/');
+			} else {
+				window.location.reload();
+			}
 		}
 	};
+
+	useEffect(() => {
+		console.log(preferredIsStudent, typeof preferredIsStudent);
+	}, [preferredIsStudent]);
 
 	const handleNextStep = (): void => {
 		setCurrentStep((prev: number): number => prev + 1);
@@ -186,7 +268,7 @@ const Login = () => {
 		<Grid container spacing={4}>
 			<Grid item xs={12}>
 				<Typography variant="h1">
-					Enter your information to make an account
+					{!force ? 'Enter your information to make an account' : 'Edit your information'}
 				</Typography>
 			</Grid>
 			<Grid item xs={12}>
@@ -355,8 +437,8 @@ const Login = () => {
 						<Typography variant="body1">Do you prefer to be with somebody introverted or extroverted?</Typography>
 						<FormControl>
 							<RadioGroup
-								onChange={(e: any) => setPreferedSocial(e.currentTarget.value)}
-								value={preferedSocial}
+								onChange={(e: any) => setPreferredSocial(e.currentTarget.value)}
+								value={preferredSocial}
 							>
 								<FormControlLabel value="extroverted" control={<Radio />} label="Extroverted" />
 								<FormControlLabel value="introverted" control={<Radio />} label="Introverted" />
@@ -367,8 +449,8 @@ const Login = () => {
 						<Typography variant="body1">Do you prefer to room with a morning or evening person?</Typography>
 						<FormControl>
 							<RadioGroup
-								onChange={(e: any) => setPreferedScheduleType(e.currentTarget.value)}
-								value={preferedScheduleType}
+								onChange={(e: any) => setPreferredScheduleType(e.currentTarget.value)}
+								value={preferredScheduleType}
 							>
 								<FormControlLabel value="morning" control={<Radio />} label="Morning" />
 								<FormControlLabel value="evening" control={<Radio />} label="Evening" />
@@ -379,8 +461,8 @@ const Login = () => {
 						<Typography variant="body1">Do you prefer to be with somebody employed or unemployed?</Typography>
 						<FormControl>
 							<RadioGroup
-								onChange={(e: any) => setPreferedEmploymentStatus(e.currentTarget.value)}
-								value={preferedEmploymentStatus}
+								onChange={(e: any) => setPreferredEmploymentStatus(e.currentTarget.value)}
+								value={preferredEmploymentStatus}
 							>
 								<FormControlLabel value="employed" control={<Radio />} label="Employed" />
 								<FormControlLabel value="unemployed" control={<Radio />} label="Unemployed" />
@@ -391,8 +473,8 @@ const Login = () => {
 						<Typography variant="body1">Do you prefer to be with a student?</Typography>
 						<FormControl>
 							<RadioGroup
-								onChange={(e: any) => setPreferedIsStudent(e.currentTarget.value)}
-								value={preferedIsStudent}
+								onChange={(e: any) => setPreferredIsStudent(e.currentTarget.value === 'true' ? true : false)}
+								value={preferredIsStudent}
 							>
 								<FormControlLabel value={true} control={<Radio />} label="Yes" />
 								<FormControlLabel value={false} control={<Radio />} label="No" />
@@ -458,10 +540,6 @@ const Login = () => {
 		</Grid >
 	];
 
-	useEffect(() => {
-		console.log(excludeIsStudent);
-	}, [excludeIsStudent]);
-
 	return (
 		(loading || !userResponse)
 			? <LoadingPage />
@@ -476,15 +554,17 @@ const Login = () => {
 							} : {}
 					}
 				>
-					{userInfo === null
+					{userInfo === null || force
 						? (
 							<ContentWrapper>
-								<Breadcrumbs>
-									<Link
-										href="/"
-									>Home</Link>
-									<Link>Login</Link>
-								</Breadcrumbs>
+								{!force && (
+									<Breadcrumbs>
+										<Link
+											href="/"
+										>Home</Link>
+										<Link>Login</Link>
+									</Breadcrumbs>
+								)}
 								<Card sx={{ maxWidth: '600px', width: '100%' }}>
 									<Grid container spacing={1}>
 										<Grid item xs={12}>
@@ -563,5 +643,7 @@ const Login = () => {
 			)
 	);
 };
+
+Login.defaultProps = defaultProps;
 
 export default Login;

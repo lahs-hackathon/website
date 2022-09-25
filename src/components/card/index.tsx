@@ -15,11 +15,14 @@ interface CardProps {
 	children: React.ReactNode;
 	sx: SxProps;
 	onClick: (e: any) => void;
+	stretch: boolean;
 }
 
 const defaultProps = {
 	sx: {},
-	onClick: () => { }
+	onClick: () => { },
+	children: <></>,
+	stretch: false
 };
 
 type CardPropsType = CardProps & typeof defaultProps;

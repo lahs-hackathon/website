@@ -3,7 +3,7 @@ interface LogoProps {
 }
 
 const defaultProps = {
-	size: 28
+	size: 40
 };
 
 type LogoPropsType = LogoProps & typeof defaultProps;

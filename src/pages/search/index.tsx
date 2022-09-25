@@ -16,10 +16,24 @@ import LoadingPage from '../loading-page';
 import { useNavigate } from 'react-router-dom';
 import useAuth from 'hooks/useAuth';
 import Header from 'components/header';
+import { RoomType } from 'src/types/city';
+import RoomProfile from 'src/components/room-profile';
 
 const Wrapper = styled('div')({
 	width: '100%',
 	height: '100%'
+});
+
+const MessageWrapper = styled('div')({
+	width: '100%',
+	display: 'flex',
+	justifyContent: 'center'
+});
+
+const Content = styled('div')({
+	padding: '30px',
+	display: 'flex',
+	justifyContent: 'center'
 });
 
 const InputWrapper = styled('div')({
@@ -38,6 +52,8 @@ const Search = () => {
 	const [usCities, setUsCities] = useState<AutocompleteLabel[]>([]);
 	const [userResponse, setUserResponse] = useState<boolean>(false);
 	const [city, setCity] = useState('');
+	const [dbCities, setDbCities] = useState<Map<string, RoomType[]>>(new Map<string, RoomType[]>());
+	const [currentInfo, setCurrentInfo] = useState<RoomType[]>([]);
 	const navigate = useNavigate();
 	const { user } = useAuth();
 
@@ -46,16 +62,42 @@ const Search = () => {
 			if (user) {
 				const userInfo = await getUserInfo();
 				if (userInfo === null) navigate('/create-profile');
-				else setUserResponse(true);
 				setUserResponse(true);
-				const dbCities = await getCities();
+				const tempDbCities = await getCities();
+				setDbCities(tempDbCities);
 				setUsCities(cities
-					.filter((item: string) => dbCities.includes(item.toLowerCase()))
+					.filter((item: string) => {
+						const cityInfo = tempDbCities.get(item)
+						if (cityInfo) return true;
+						return false;
+					})
 					.map((item: string): AutocompleteLabel => ({ label: item }))
 				);
 			}
 		})();
 	}, [user]);
+
+	useEffect(() => {
+		(async (): Promise<void> => {
+			const cityInfo = dbCities.get(city);
+			if (cityInfo) {
+				setCurrentInfo(cityInfo);
+			}
+		})();
+	}, [city]);
+
+	useEffect(() => {
+		console.log(currentInfo);
+	}, [currentInfo]);
+
+	const handleCityChange = (e: any) => {
+		const value = e.currentTarget.value;
+		console.log(value);
+	};
+
+	const handleAutocompleteChange = (e: any) => {
+		setCity(e.target.innerText);
+	};
 
 	return (
 		<AuthGuard>
@@ -69,7 +111,8 @@ const Search = () => {
 								xs={12}
 								sx={{
 									display: 'flex',
-									justifyContent: 'center'
+									alignItem: 'center',
+									flexDirection: 'column'
 								}}
 							>
 								<InputWrapper>
@@ -87,10 +130,12 @@ const Search = () => {
 											<Grid item xs={12}>
 												<Autocomplete
 													options={usCities}
+													onChange={handleAutocompleteChange}
 													renderInput={(params) => (
 														<TextField
 															{...params}
 															label="Search By City"
+															onChange={handleCityChange}
 															sx={{
 																background: 'white',
 																borderRadius: '4px !important'
@@ -102,6 +147,30 @@ const Search = () => {
 										</Grid>
 									</WidthRestriction>
 								</InputWrapper>
+								<Content>
+									<WidthRestriction>
+										{currentInfo.length > 0
+											? (
+												<Grid container spacing={4}>
+													{currentInfo.map((info: RoomType, index: number) => (
+														<Grid
+															item
+															xs={4}
+															key={`room-profile-${index}`}
+														>
+															<RoomProfile room={info} />
+														</Grid>
+													))}
+												</Grid>
+											)
+											: (
+												<MessageWrapper>
+													<Typography variant="h2">Search for cities to see possible roomates</Typography>
+												</MessageWrapper>
+											)
+										}
+									</WidthRestriction>
+								</Content>
 							</Grid>
 						</Grid>
 					)

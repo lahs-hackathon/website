@@ -12,7 +12,8 @@ import {
 import {
 	Search,
 	Person,
-	Logout
+	Logout,
+	Upload
 } from '@mui/icons-material';
 import Logo from 'src/assets/logo';
 import useAuth from 'hooks/useAuth';
@@ -76,10 +77,24 @@ const Header = () => {
 		setAnchorEl(null);
 	};
 
+	const toHome = (): void => {
+		navigate('/');
+	};
+
+	const toUploadRoom = (): void => {
+		navigate('/create-room');
+	};
+
 	return (
 		<HeaderWrapper>
 			<WidthRestriction>
-				<ItemWrapper spacing={2}>
+				<ItemWrapper
+					spacing={2}
+					onClick={toHome}
+					sx={{
+						cursor: 'pointer'
+					}}
+				>
 					<Item>
 						<Logo />
 					</Item>
@@ -103,6 +118,15 @@ const Header = () => {
 												variant="outlined"
 											>
 												Search
+											</Button>
+										</Item>
+										<Item>
+											<Button
+												onClick={toUploadRoom}
+												startIcon={<Upload />}
+												variant="outlined"
+											>
+												Upload Room
 											</Button>
 										</Item>
 										<Item>

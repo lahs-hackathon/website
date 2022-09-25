@@ -1,3 +1,5 @@
+import { RoomIdType } from "./city";
+
 export interface AgePreference {
 	max: number;
 	min: number;
@@ -17,7 +19,8 @@ export interface UserData {
 	gender: GenderType;
 	agePreference: AgePreference;
 	maxRent: number;
-	tags: (string | boolean | null)[];
-	preferences: (string | boolean | null)[];
-	excludes: (string | boolean | null)[];
+	tags: (string | null)[];
+	preferences: (string | null)[];
+	excludes: (string | null)[];
+	roomIds?: RoomIdType[];
 }

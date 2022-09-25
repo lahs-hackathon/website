@@ -5,6 +5,8 @@ import Search from 'pages/search';
 import CreateProfile from 'pages/create-profile';
 import Login from 'pages/login';
 import Profile from 'pages/profile';
+import CreateRoom from 'pages/create-room';
+import Chat from 'pages/chat';
 
 const routes: RouteType[] = [
 	{
@@ -26,6 +28,14 @@ const routes: RouteType[] = [
 	{
 		path: '/profile',
 		element: <Profile />
+	},
+	{
+		path: '/create-room',
+		element: <CreateRoom />
+	},
+	{
+		path: '/chat/:city/:id',
+		element: <Chat />
 	},
 	{
 		path: '*',
