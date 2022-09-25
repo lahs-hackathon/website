@@ -29,7 +29,6 @@ import {
 } from '@mui/material';
 import Card from 'components/card';
 import { useNavigate } from 'react-router-dom';
-import Header from 'components/header';
 
 const PageWrapper = styled('div')({
 	height: '100%',
@@ -116,6 +115,7 @@ const Login = ({ force }: LoginPropsType) => {
 				const tempUserInfo = await getUserInfo();
 				setUserInfo(tempUserInfo);
 				if (tempUserInfo !== null) {
+					console.log(tempUserInfo);
 					setName(tempUserInfo.name);
 					setAge(tempUserInfo.age);
 					setGender(tempUserInfo.gender);
@@ -246,6 +246,10 @@ const Login = ({ force }: LoginPropsType) => {
 			}
 		}
 	};
+
+	useEffect(() => {
+		console.log(preferredIsStudent, typeof preferredIsStudent);
+	}, [preferredIsStudent]);
 
 	const handleNextStep = (): void => {
 		setCurrentStep((prev: number): number => prev + 1);

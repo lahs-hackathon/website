@@ -33,7 +33,9 @@ const MessageWrapper = styled('div')({
 const Content = styled('div')({
 	padding: '30px',
 	display: 'flex',
-	justifyContent: 'center'
+	justifyContent: 'center',
+	maxHeight: '100vh',
+	overflowY: 'scroll'
 });
 
 const InputWrapper = styled('div')({
@@ -82,6 +84,7 @@ const Search = () => {
 			const cityInfo = dbCities.get(city);
 			if (cityInfo) {
 				setCurrentInfo(cityInfo);
+				console.log(cityInfo);
 			}
 		})();
 	}, [city]);

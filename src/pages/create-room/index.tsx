@@ -249,14 +249,14 @@ const CreateRoom = () => {
 											</FormControl>
 										</Grid>
 										<Grid item xs={12}>
-											<Typography variant="body1">Are you a employed?</Typography>
+											<Typography variant="body1">What is your employment status?</Typography>
 											<FormControl>
 												<RadioGroup
 													onChange={(e: any) => setEmployed(e.currentTarget.value)}
 													value={employed}
 												>
-													<FormControlLabel value={true} control={<Radio />} label="Yes" />
-													<FormControlLabel value={false} control={<Radio />} label="No" />
+													<FormControlLabel value="employed" control={<Radio />} label="Employed" />
+													<FormControlLabel value="unemployed" control={<Radio />} label="Unemployed" />
 												</RadioGroup>
 											</FormControl>
 										</Grid>
