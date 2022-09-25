@@ -5,7 +5,8 @@ import {
 	Collapse,
 } from '@mui/material';
 import {
-	Edit
+	Edit,
+	Launch
 } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 import Header from 'components/header';
@@ -14,13 +15,14 @@ import useAuth from 'hooks/useAuth';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthGuard from 'src/components/auth-guard';
-import { getUserInfo, getRoomsFromIds } from 'db/firestore';
+import { getUserInfo, getRoomsFromIds, getUserChatIds } from 'db/firestore';
 import { UserData } from 'types/user';
 import { RoomType } from 'types/city';
 import LoadingPage from '../loading-page';
 import Card from 'components/card';
 import CreateProfile from 'pages/create-profile';
 import HouseProfile from 'src/pages/profile/HouseProfile';
+import { ChatIdType } from 'types/chat';
 
 const Content = styled('div')({
 	display: 'flex',
@@ -42,6 +44,7 @@ const Profile = () => {
 	const [info, setInfo] = useState<UserData | null>(null);
 	const [editing, setEditing] = useState<boolean>(false);
 	const [rooms, setRooms] = useState<RoomType[]>([]);
+	const [chats, setChats] = useState<ChatIdType[]>([]);
 
 	useEffect(() => {
 		(async (): Promise<void> => {
@@ -53,6 +56,8 @@ const Profile = () => {
 						setRooms(tempRooms);
 					}
 					setInfo(userInfo);
+					const chatIds: ChatIdType[] = await getUserChatIds();
+					setChats(chatIds);
 					setUserResponse(true);
 				} else {
 					navigate('/create-profile');
@@ -75,6 +80,10 @@ const Profile = () => {
 
 	const stopEditing = (): void => {
 		setEditing(false);
+	};
+
+	const handleOpenChat = (chat: ChatIdType): void => {
+		navigate(`/chat/${chat.city.replace(/\s/g, '')}/${chat.id}`);
 	};
 
 	return (
@@ -237,6 +246,48 @@ const Profile = () => {
 											<CreateProfile force />
 										</Collapse>
 									</Grid>
+									{(chats.length > 0 && !editing) && (
+										<Grid item xs={12}>
+											<Grid container spacing={2}>
+												<Grid item xs={12}>
+													<Typography variant="h1">
+														Your chats
+													</Typography>
+												</Grid>
+												<Grid item xs={12}>
+													<Grid container spacing={4}>
+														{chats.map((chat: ChatIdType, index: number) => (
+															<Grid
+																item
+																xs={4}
+																key={`chat-convo-${index}`}
+															>
+																<Card>
+																	<Grid container spacing={1}>
+																		<Grid item xs={12}>
+																			<Typography variant="h2">
+																				{chat.name}
+																			</Typography>
+																			<Typography variant="body1">
+																				{chat.city}
+																			</Typography>
+																		</Grid>
+																		<Grid item xs={12}>
+																			<Button
+																				variant="outlined"
+																				onClick={() => handleOpenChat(chat)}
+																				startIcon={<Launch />}
+																			>Open Chat</Button>
+																		</Grid>
+																	</Grid>
+																</Card>
+															</Grid>
+														))}
+													</Grid>
+												</Grid>
+											</Grid>
+										</Grid>
+									)}
 								</Grid>
 							</WidthRestriction>
 						)

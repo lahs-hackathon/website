@@ -20,7 +20,11 @@ const ChatWrapper = styled('div')({
 
 const ChatBody = styled('div')({
 	width: '100%',
-	height: 'calc(100% - 125px)'
+	height: 'calc(100% - 125px)',
+	display: 'flex',
+	flexDirection: 'column',
+	gap: '8px',
+	padding: '25px'
 });
 
 const ChatInputWrapper = styled('div')({
@@ -43,6 +47,14 @@ const Input = styled('input')(({ theme }) => ({
 	}
 }));
 
+const ChatBubble = styled('span')({
+	padding: '4px 10px',
+	background: 'rgba(0, 0, 0, 0.125)',
+	borderRadius: 100,
+	maxWidth: '50%',
+	width: 'fit-content'
+});
+
 const Chat = () => {
 	const location = useLocation();
 	const [pathname, setPathname] = useState<string>('');
@@ -50,6 +62,7 @@ const Chat = () => {
 	const [id, setId] = useState<string>('');
 	const [messages, setMessages] = useState<string[]>([]);
 	const [text, setText] = useState<string>('');
+	const [uid, setUid] = useState<string>('');
 	const { user } = useAuth();
 
 	const parseToCityName = (name: string): string => {
@@ -69,6 +82,10 @@ const Chat = () => {
 		const sections = pname.split('/');
 		const tempCity = sections[0];
 		const tempId = sections[1];
+		if (location.search !== '') {
+			const newUid = location.search.split('=')[1];
+			setUid(newUid);
+		}
 		setCity(parseToCityName(tempCity));
 		setId(tempId);
 		setPathname(pname);
@@ -76,11 +93,11 @@ const Chat = () => {
 
 	useEffect(() => {
 		if (user !== null && city !== '' && id !== '') {
-			onSnapshot(doc(db, 'chats', city, id, user.uid), (doc) => {
+			let userId = uid === '' ? user.uid : uid;
+			onSnapshot(doc(db, 'chats', city, id, userId), (doc) => {
 				const data = doc.data();
 				if (data && data.messages) {
 					const messages = data.messages;
-					console.log('messages', messages);
 					setMessages(messages);
 				}
 			});
@@ -89,7 +106,10 @@ const Chat = () => {
 
 	const handleSubmit = (e: any): void => {
 		e.preventDefault();
-		writeMessage(city, id, text);
+		if (text !== '') {
+			writeMessage(city, id, text);
+			setText('');
+		}
 	};
 
 	const handleChange = (e: any): void => {
@@ -101,6 +121,11 @@ const Chat = () => {
 			<Header />
 			<ChatWrapper>
 				<ChatBody>
+					{messages.map((message: string, index: number) => (
+						<ChatBubble key={`msg-${index}`}>
+							{message}
+						</ChatBubble>
+					))}
 				</ChatBody>
 				<ChatInputWrapper>
 					<form onSubmit={handleSubmit}>

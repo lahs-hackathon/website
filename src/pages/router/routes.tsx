@@ -7,6 +7,7 @@ import Login from 'pages/login';
 import Profile from 'pages/profile';
 import CreateRoom from 'pages/create-room';
 import Chat from 'pages/chat';
+import Chats from 'pages/chats';
 
 const routes: RouteType[] = [
 	{
@@ -36,6 +37,10 @@ const routes: RouteType[] = [
 	{
 		path: '/chat/:city/:id',
 		element: <Chat />
+	},
+	{
+		path: '/chats/:city/:id',
+		element: <Chats />
 	},
 	{
 		path: '*',

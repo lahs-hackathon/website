@@ -7,9 +7,10 @@ import {
 } from '@mui/material';
 import {
 	DeleteOutline,
-	Edit
+	Launch
 } from '@mui/icons-material';
 import { deleteRoom } from 'db/firestore';
+import { useNavigate } from 'react-router-dom';
 
 interface HouseProfileProps {
 	room: RoomType;
@@ -18,7 +19,7 @@ interface HouseProfileProps {
 }
 
 const HouseProfile = ({ room, id, deleteLocally }: HouseProfileProps) => {
-	console.log(room);
+	const navigate = useNavigate();
 
 	const handleDeleteRoom = async (): Promise<void> => {
 		await deleteRoom(room, id);
@@ -29,6 +30,10 @@ const HouseProfile = ({ room, id, deleteLocally }: HouseProfileProps) => {
 		let arr = str.split('');
 		arr[0] = arr[0].toUpperCase();
 		return arr.join('');
+	};
+
+	const toChats = (): void => {
+		navigate(`/chats/${room.city.replace(/\s/g, '')}/${id}`);
 	};
 
 	return (
@@ -54,10 +59,21 @@ const HouseProfile = ({ room, id, deleteLocally }: HouseProfileProps) => {
 					</ul>
 				</Grid>
 				<Grid item xs={12}>
-					<Button
-						startIcon={<DeleteOutline />}
-						onClick={handleDeleteRoom}
-					>Delete</Button>
+					<Grid container spacing={1}>
+						<Grid item>
+							<Button
+								startIcon={<Launch />}
+								variant="outlined"
+								onClick={toChats}
+							>Open Chats</Button>
+						</Grid>
+						<Grid item>
+							<Button
+								startIcon={<DeleteOutline />}
+								onClick={handleDeleteRoom}
+							>Delete</Button>
+						</Grid>
+					</Grid>
 				</Grid>
 			</Grid>
 		</Card >

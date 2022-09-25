@@ -23,4 +23,5 @@ export interface UserData {
 	preferences: (string | null)[];
 	excludes: (string | null)[];
 	roomIds?: RoomIdType[];
+	uid?: string;
 }

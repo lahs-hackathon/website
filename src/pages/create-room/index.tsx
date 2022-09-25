@@ -91,7 +91,6 @@ const CreateRoom = () => {
 
 	const submitRoom = async (): Promise<void> => {
 		if (validRoom()) {
-			console.log('valid');
 			const room: RoomType = {
 				city: inputCity,
 				name,
@@ -108,8 +107,6 @@ const CreateRoom = () => {
 			};
 			await addRoom(room);
 			navigate('/profile');
-		} else {
-			console.log('invalid');
 		}
 	};
 

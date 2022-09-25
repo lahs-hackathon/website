@@ -13,6 +13,7 @@ import app from './init';
 import { UserData } from 'types/user';
 import { RoomType, RoomIdType } from 'src/types/city';
 import { uuid } from 'utils/uuid';
+import { ChatIdType } from 'src/types/chat';
 
 export const db = getFirestore(app);
 
@@ -117,14 +118,13 @@ export const deleteRoom = async (room: RoomType, id: string): Promise<void> => {
 	const userInfo: UserData | null = await getUserInfo();
 	if (userInfo !== null && user !== null) {
 		const idArr = userInfo.roomIds!.filter((item: RoomIdType): boolean => item.id !== id);
-		console.log(idArr);
 		await updateDoc(doc(db, 'users', user.uid), {
 			roomIds: idArr
 		});
 	}
 };
 
-export const createChatGroup = async (city: string, id: string): Promise<void> => {
+export const createChatGroup = async (city: string, id: string, name: string): Promise<void> => {
 	const user = getCurrentUser();
 	if (user === null) return;
 	const currentData = await getDoc(doc(db, 'chats', city, id, user.uid));
@@ -135,15 +135,44 @@ export const createChatGroup = async (city: string, id: string): Promise<void> =
 		const currentChatIdsDoc = await getDoc(doc(db, 'users', user.uid, 'chats', 'chatIds'));
 		if (!currentChatIdsDoc.exists()) {
 			await setDoc(doc(db, 'users', user.uid, 'chats', 'chatIds'), {
-				ids: [{id, city}]
+				ids: [{id, city, name}]
 			});
 		} else {
 			const data = currentChatIdsDoc.data();
 			await updateDoc(doc(db, 'users', user.uid, 'chats', 'chatsIds'), {
-				ids: [...data.ids, {id, city}]
+				ids: [...data.ids, {id, city, name}]
 			})
 		}
 	}
+};
+
+export const getUserChatIds = async (): Promise<ChatIdType[]> => {
+	const user = getCurrentUser();
+	if (user === null) return [];
+	const idDoc = await getDoc(doc(db, 'users', user.uid, 'chats', 'chatIds'));
+	if (idDoc.exists()) {
+		const data = idDoc.data();
+		return data.ids;
+	}
+	return [];
+};
+
+export const getRoomChats = async (city: string, id: string): Promise<UserData[]> => {
+	const chatCol = await getDocs(collection(db, 'chats', city, id));
+	let ids: string[] = [];
+	chatCol.forEach((chat) => {
+		ids.push(chat.id);
+	});
+	let roomChats: UserData[] = [];
+	for (let i = 0; i < ids.length; i++) {
+		const userDoc = await getDoc(doc(db, 'users', ids[i]));
+		const obj = {
+			...userDoc.data() as UserData,
+			uid: ids[i]
+		}
+		roomChats.push(obj);
+	}
+	return roomChats;
 };
 
 export const writeMessage = async (city: string, id: string, text: string): Promise<void> => {

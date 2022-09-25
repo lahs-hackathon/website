@@ -86,13 +86,9 @@ const Search = () => {
 		})();
 	}, [city]);
 
-	useEffect(() => {
-		console.log(currentInfo);
-	}, [currentInfo]);
-
 	const handleCityChange = (e: any) => {
 		const value = e.currentTarget.value;
-		console.log(value);
+		setCity(value);
 	};
 
 	const handleAutocompleteChange = (e: any) => {

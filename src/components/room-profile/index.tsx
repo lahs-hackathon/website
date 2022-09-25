@@ -23,7 +23,7 @@ const RoomProfile = ({ room }: RoomProfileProps) => {
 
 	const handleContact = async (): Promise<void> => {
 		if (room.id) {
-			await createChatGroup(room.city, room.id);
+			await createChatGroup(room.city, room.id, room.name);
 			navigate(`/chat/${room.city.replace(/\s/g, '')}/${room.id}`);
 		}
 	};
