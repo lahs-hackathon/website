@@ -72,7 +72,7 @@ const Landing = () => {
 							}}
 						>
 							<Title>
-								Find your perfect roomate
+								Find Your Perfect Roommate
 							</Title>
 						</Grid>
 						<Grid
