@@ -14,17 +14,23 @@ const CardEl = styled(MuiCard)({
 interface CardProps {
 	children: React.ReactNode;
 	sx: SxProps;
+	onClick: (e: any) => void;
 }
 
 const defaultProps = {
-	sx: {}
+	sx: {},
+	onClick: () => { }
 };
 
 type CardPropsType = CardProps & typeof defaultProps;
 
-const Card = ({ children, sx }: CardPropsType) => {
+const Card = ({ children, sx, onClick }: CardPropsType) => {
+	const handleClick = (e: any): void => {
+		onClick(e);
+	};
+
 	return (
-		<CardEl sx={sx}>
+		<CardEl sx={sx} onClick={handleClick}>
 			{children}
 		</CardEl>
 	)

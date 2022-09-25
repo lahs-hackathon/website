@@ -15,8 +15,7 @@ export default defineConfig({
       'pages': resolve(__dirname, './src/pages'),
       'theme': resolve(__dirname, './src/theme'),
       'utils': resolve(__dirname, './src/utils'),
-      'hooks': resolve(__dirname, './src/hooks'),
-      'data': resolve(__dirname, './src/data')
+      'hooks': resolve(__dirname, './src/hooks')
     }
   },
   plugins: [react()]

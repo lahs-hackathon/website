@@ -1678,7 +1678,8 @@ const cities: string[] = [
 	'Ten Sleep',
 	'Thermopolis',
 	'Torrington',
-	'Worland'
+	'Worland',
+	'Los Altos'
 ];
 
 export default cities ;

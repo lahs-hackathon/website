@@ -1,7 +1,14 @@
-const Logo = () => {
-	const height: number = 28;
-	const width: number = 28;
+interface LogoProps {
+	size: number;
+}
 
+const defaultProps = {
+	size: 28
+};
+
+type LogoPropsType = LogoProps & typeof defaultProps;
+
+const Logo = ({ size }: LogoPropsType) => {
 	return (
 		<svg
 			version="1.1"
@@ -11,8 +18,8 @@ const Logo = () => {
 			strokeLinecap="square"
 			strokeMiterlimit="10"
 			id="svg892"
-			width={`${width}px`}
-			height={`${height}px`}
+			width={`${size}px`}
+			height={`${size}px`}
 			style={{
 				transform: 'translateY(-2px)'
 			}}
@@ -117,5 +124,7 @@ const Logo = () => {
 		</svg>
 	);
 };
+
+Logo.defaultProps = defaultProps;
 
 export default Logo;

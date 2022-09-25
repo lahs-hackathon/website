@@ -3,16 +3,22 @@ import {
 	Typography,
 	Grid,
 	Button,
-	CircularProgress
+	CircularProgress,
+	Menu,
+	MenuItem,
+	ListItemIcon,
+	ListItemText
 } from '@mui/material';
 import {
-	Search
+	Search,
+	Person,
+	Logout
 } from '@mui/icons-material';
 import Logo from 'src/assets/logo';
-import { signInWithGoogle } from 'db/auth';
 import useAuth from 'hooks/useAuth';
 import { signOut } from 'db/auth';
 import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 
 const HeaderWrapper = styled('header')({
 	width: '100%',
@@ -43,10 +49,8 @@ const WidthRestriction = styled('div')({
 const Header = () => {
 	const { user, loading } = useAuth();
 	const navigate = useNavigate();
-
-	const handleSignIn = (): void => {
-		signInWithGoogle();
-	};
+	const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+	const userMenuOpen = Boolean(anchorEl);
 
 	const handleSignOut = (): void => {
 		signOut();
@@ -54,6 +58,22 @@ const Header = () => {
 
 	const toSearch = (): void => {
 		navigate('/search');
+	};
+
+	const toSignIn = (): void => {
+		navigate('/login');
+	};
+
+	const toProfile = (): void => {
+		navigate('/profile');
+	};
+
+	const handleOpenUserMenu = (e: any): void => {
+		setAnchorEl(e.currentTarget);
+	};
+
+	const closeUserMenu = (): void => {
+		setAnchorEl(null);
 	};
 
 	return (
@@ -87,17 +107,56 @@ const Header = () => {
 										</Item>
 										<Item>
 											<Button
-												onClick={handleSignOut}
-												color="error"
-											>Sign Out</Button>
+												sx={{
+													padding: 0,
+													minWidth: 0,
+													borderRadius: 100
+												}}
+												color="inherit"
+												onClick={handleOpenUserMenu}
+											>
+												<img
+													src={user.photoURL}
+													alt=""
+													referrerPolicy="no-referrer"
+													style={{
+														height: 36.5,
+														width: 36.5,
+														borderRadius: 100,
+														cursor: 'pointer'
+													}}
+												/>
+											</Button>
+											<Menu
+												open={userMenuOpen}
+												onClose={closeUserMenu}
+												anchorEl={anchorEl}
+											>
+												<MenuItem onClick={toProfile}>
+													<ListItemIcon>
+														<Person />
+													</ListItemIcon>
+													<ListItemText>
+														Profile
+													</ListItemText>
+												</MenuItem>
+												<MenuItem onClick={handleSignOut}>
+													<ListItemIcon>
+														<Logout />
+													</ListItemIcon>
+													<ListItemText>
+														Sign out
+													</ListItemText>
+												</MenuItem>
+											</Menu>
 										</Item>
 									</Grid>
 								)
 								: (
 									<Button
 										variant="contained"
-										onClick={handleSignIn}
-									>Log In</Button>
+										onClick={toSignIn}
+									>Get Started</Button>
 								)
 						}
 					</Item>

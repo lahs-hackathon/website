@@ -1,41 +1,23 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import useAuth from 'hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
-import { getUserInfo } from 'db/firestore';
 import LoadingPage from 'pages/loading-page';
 
-interface GuardProps {
+interface AuthGuardProps {
 	children: React.ReactElement | null;
 }
 
-const AuthGuard = ({ children }: GuardProps) => {
+const AuthGuard = ({ children }: AuthGuardProps) => {
 	const { user, loading } = useAuth();
-	const [userInfoResponse, setUserInfoResponse] = useState<boolean>(false);
-	// true -> valid
-	// false -> invalid
-	// null -> loading
-	const [validUser, setValidUser] = useState<boolean | null>(null);
 	const navigate = useNavigate();
 
 	useEffect(() => {
-		(async (): Promise<void> => {
-			const userInfo = await getUserInfo();
-			setValidUser(userInfo !== null);
-			setUserInfoResponse(true);
-		})();
-	}, []);
-
-	useEffect(() => {
-		console.log(validUser);
-	}, [validUser]);
-
-	useEffect(() => {
-		if ((!loading && user === null) || (userInfoResponse === true && validUser === false)) {
+		if (!loading && user === null) {
 			navigate('/login', { replace: true });
 		}
-	}, [loading, user, navigate, userInfoResponse]);
+	}, [loading, user, navigate]);
 
-	return userInfoResponse ? children : <LoadingPage />;
+	return loading ? <LoadingPage /> : children;
 };
 
 export default AuthGuard;
