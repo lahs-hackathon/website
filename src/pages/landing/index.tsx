@@ -91,7 +91,7 @@ const Landing = () => {
 									<Typography variant="h1">Who are we?</Typography>
 								</Grid>
 								<Grid item xs={12}>
-									<Typography variant="h4">We are Roomberry. Our goal is to make finding your perfect roommate a piece of cake! Through our advanced algorithms, we are able to match your preferences to other people's personalities in order to give you the best rooming experience.</Typography>
+									<Typography variant="h4">We are Roomberry. Our goal is to make finding your perfect roommate a piece of cake! With our service, you will be able to filter and sort through candidates in order to find someone who fits your preferences.</Typography>
 								</Grid>
 							</Grid>
 						</Grid>
