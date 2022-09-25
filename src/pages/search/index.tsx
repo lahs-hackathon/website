@@ -21,7 +21,8 @@ import RoomProfile from 'src/components/room-profile';
 
 const Wrapper = styled('div')({
 	width: '100%',
-	height: '100%'
+	height: '100%',
+	overflowY: 'scroll'
 });
 
 const MessageWrapper = styled('div')({
